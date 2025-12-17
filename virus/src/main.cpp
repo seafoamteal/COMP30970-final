@@ -26,5 +26,9 @@ int main() {
     j++;
   }
 
-  cout << after.size() - j - i << endl;
+  if (i + j > after.size()) {
+    cout << 0 << endl;
+  } else {
+    cout << after.size() - j - i << endl;
+  }
 }
