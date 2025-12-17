@@ -1,0 +1,8 @@
+.direnv/
+.envrc
+.nvim.lua
+test/
+test_runner.py
+main
+init.fish
+justfile
