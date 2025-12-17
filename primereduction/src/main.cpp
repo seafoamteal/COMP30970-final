@@ -1,4 +1,6 @@
+#include <algorithm>
 #include <bitset>
+#include <cassert>
 #include <cmath>
 #include <iostream>
 #include <unordered_map>
@@ -6,9 +8,6 @@
 using namespace std;
 
 #define rep(i, a, b) for (int i = a; i < (b); ++i)
-#define all(x) begin(x), end(x)
-#define sz(x) (int)(x).size()
-typedef long long ll;
 typedef pair<int, int> pii;
 typedef vector<int> vi;
 
@@ -16,6 +15,7 @@ pair<int, int> primereduce(int);
 vi eratosthenes();
 
 auto MEMO = unordered_map<int, pair<int, int>>();
+auto FACTOR_SUM_MEMO = unordered_map<int, int>();
 
 const int LIM = 1e5;
 bitset<LIM> is_prime;
@@ -27,28 +27,19 @@ int main() {
 
   pr = eratosthenes();
 
-  vi nums = vi();
-
   int tc;
   cin >> tc;
   while (tc != 4) {
-    nums.push_back(tc);
+    auto res = primereduce(tc);
+    cout << res.first << " " << res.second << "\n";
     cin >> tc;
-  }
-
-  auto out = vector<pair<int, int>>();
-  for (auto n : nums) {
-    out.push_back(primereduce(n));
-  }
-
-  for (auto r : out) {
-    cout << r.first << " " << r.second << "\n";
   }
 }
 
 pair<int, int> primereduce(int num) {
   auto cached = MEMO.find(num);
   if (cached != MEMO.end()) {
+    cout << "Cache hit" << endl;
     return {cached->second.first, cached->second.second};
   }
 
@@ -60,7 +51,14 @@ pair<int, int> primereduce(int num) {
   } else {
     factor_sum = 0;
     for (auto p : pr) {
+      auto cached = FACTOR_SUM_MEMO.find(val);
+      if (cached != FACTOR_SUM_MEMO.end()) {
+        factor_sum += cached->second;
+        break;
+      }
+
       while (val % p == 0) {
+        // something stupid is happening here :(
         factor_sum += p;
         val /= p;
       }
@@ -76,6 +74,7 @@ pair<int, int> primereduce(int num) {
     auto next = primereduce(factor_sum);
     next.second += 1;
 
+    FACTOR_SUM_MEMO.insert({num, factor_sum});
     MEMO.insert({num, next});
     return next;
   }
